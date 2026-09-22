@@ -12,7 +12,7 @@
 
 #include "ft_nmap.h"
 
-void	parse_help(char *arg, t_info *info)
+static void	parse_help(char *arg, t_info *info)
 {
 	(void)info;
 	(void)arg;
@@ -27,23 +27,80 @@ void	parse_help(char *arg, t_info *info)
 	exit(0);
 }
 
-void	parse_ports(char *arg, t_info *info)
+bool	set_port(uint8_t *bitmap, int port)
 {
-	(void)arg;
-	(void)info;
+    if (port >= 1 && port < MAX_PORTS) {
+        bitmap[port / 8] |= (1 << (port % 8));
+		return (true);
+    }
+	return (false);
 }
 
-void	parse_ip(char *arg, t_info *info)
+bool	is_port_set(const uint8_t *bitmap, int port)
+{
+    if (port >= 1 && port < MAX_PORTS) {
+        return (bitmap[port / 8] & (1 << (port % 8))) != 0;
+    }
+    return (false);
+}
+
+static void	port_error(char *str, char **ports_list, char **ports)
+{
+	printf("ft_nmap: Invalid port number: %s\n", str);
+	free_tab(ports_list);
+	free_tab(ports);
+	exit(1);
+}
+
+static void	parse_ports(char *arg, t_info *info)
+{
+	for (int i = 0; arg[i]; i++) {
+		if (!((arg[i] >= '0' && arg[i] <= '9') || arg[i] == ',' || arg[i] == '-')) {
+			printf("ft_nmap: Invalid port format: %s\n", arg);
+			exit(1);
+		}
+		if (arg[i] == '-' || arg[i] == ',') {
+			if (i == 0 || arg[i + 1] == '\0' || !isdigit(arg[i - 1]) || !isdigit(arg[i + 1])) {
+				printf("ft_nmap: Invalid port range format: %s\n", arg);
+				exit(1);
+			}
+		}
+	}
+	
+	char	**ports = ft_split(arg, ",");
+	for (int i = 0; ports[i]; i++) {
+		char	**ports_list = ft_split(ports[i], "-");
+		switch (tab_len(ports_list)) {
+			case 1:
+				if (set_port(info->port_bitmap, strtol(ports_list[0], NULL, 10)) == false)
+					port_error(ports[i], ports_list, ports);
+				break;
+			case 2:
+				for (int start = strtol(ports_list[0], NULL, 10), end = strtol(ports_list[1], NULL, 10); start <= end; start++) {
+					if (set_port(info->port_bitmap, start) == false)
+						port_error(ports[i], ports_list, ports);
+				}
+				break;
+			default:
+				port_error(ports[i], ports_list, ports);
+		}
+		free_tab(ports_list);
+	}
+	free_tab(ports);
+
+}
+
+static void	parse_ip(char *arg, t_info *info)
 {
 	info->ip = arg;
 }
 
-void	parse_file(char *arg, t_info *info)
+static void	parse_file(char *arg, t_info *info)
 {
 	info->file = arg;
 }
 
-void	parse_speedup(char *arg, t_info *info)
+static void	parse_speedup(char *arg, t_info *info)
 {
 	info->nb_threads = strtol(arg, NULL, 10);
 	if (info->nb_threads < 1 || info->nb_threads > 250) {
@@ -52,7 +109,7 @@ void	parse_speedup(char *arg, t_info *info)
 	}
 }
 
-void	parse_scan(char *arg, t_info *info)
+static void	parse_scan(char *arg, t_info *info)
 {
 	char *scan_types[] = {"SYN", "NULL", "FIN", "XMAS", "ACK", "UDP"};
 	char **types = ft_split(arg, "/, ");

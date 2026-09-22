@@ -16,8 +16,7 @@ void	ft_init_info(t_info *info)
 {
 	info->ip = NULL;
 	info->file = NULL;
-	info->port_start = -1;
-	info->port_end = -1;
+	memset(info->port_bitmap, 0, BITMAP_SIZE);
 	info->nb_threads = 1;
 	for (int i = 0; i < 6; i++)
 		info->types[i] = false;
@@ -30,4 +29,13 @@ void free_tab(char **tab)
 	for (int i = 0; tab[i]; i++)
         free(tab[i]);
     free(tab);
+}
+
+int	tab_len(char **tab)
+{
+	int	len = 0;
+
+	while (tab[len])
+		len++;
+	return (len);
 }

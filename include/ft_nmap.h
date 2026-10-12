@@ -40,6 +40,9 @@ void	check_flags(int ac, char **av, t_info *info);
 bool 	is_port_set(const uint8_t *bitmap, int port);
 bool	set_port(uint8_t *bitmap, int port);
 
+/*parser_file.c*/
+char	**read_host_file(char *filename);
+
 /*ft_slpit.c*/
 char **ft_split(char *str, char *sep);
 

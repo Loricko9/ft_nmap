@@ -18,12 +18,12 @@ static void	parse_help(char *arg, t_info *info)
 	(void)arg;
 	printf("Help Screen\n");
 	printf("ft_nmap [OPTIONS]\n");
-	printf("--help Print this help screen\n");
-	printf("--ports ports to scan (eg: 1-10 or 1,2,3 or 1,5-15)\n");
-	printf("--ip ip addresses to scan in dot format\n");
-	printf("--file File name containing IP addresses to scan,\n");
-	printf("--speedup [250 max] number of parallel threads to use\n");
-	printf("--scan SYN/NULL/FIN/XMAS/ACK/UDP\n");
+	printf("--help\tPrint this help screen\n");
+	printf("--ports\tports to scan (eg: 1-10 or 1,2,3 or 1,5-15)\n");
+	printf("--ip\tip addresses to scan in dot format\n");
+	printf("--file\tFile name containing IP addresses to scan,\n");
+	printf("--speedup\t[250 max] number of parallel threads to use\n");
+	printf("--scan\tSYN/NULL/FIN/XMAS/ACK/UDP\n");
 	exit(0);
 }
 
@@ -111,7 +111,7 @@ static void	parse_speedup(char *arg, t_info *info)
 
 static void	parse_scan(char *arg, t_info *info)
 {
-	char *scan_types[] = {"SYN", "NULL", "FIN", "XMAS", "ACK", "UDP"};
+	char *scan_types[] = {"SYN", "NULL", "FIN", "XMAS", "ACK", "UDP", NULL};
 	char **types = ft_split(arg, "/, ");
 
 	bool found;
@@ -132,18 +132,19 @@ static void	parse_scan(char *arg, t_info *info)
 	}
 	free_tab(types);
 }
+
 void	check_flags(int ac, char **av, t_info *info)
 {
-	char *flag[] = {"--help", "--ports", "--ip", "--file", "--speedup", "--scan"};
+	char *flag[] = {"--help", "--ports", "--ip", "--file", "--speedup", "--scan", NULL};
 	FuncParser parser[] = {&parse_help, &parse_ports, &parse_ip, &parse_file, &parse_speedup, &parse_scan};
 	
 	bool found_flag;
 	for (int i = 1; i < ac; i++)
 	{
 		found_flag = false;
-		for(int j = 0; j < 6; j++) {
+		for (int j = 0; j < 6; j++) {
 			if (strcmp(av[i], flag[j]) == 0) {
-				parser[j](*av, info);
+				parser[j](av[i + 1], info);
 				found_flag = true;
 				i++;
 				break;

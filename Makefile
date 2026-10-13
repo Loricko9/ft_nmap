@@ -1,4 +1,4 @@
-FILES 	=	ft_nmap.c parser.c parser_file.c ft_split.c utils.c scan_jobs.c target.c
+FILES 	=	ft_nmap.c parser.c parser_file.c ft_split.c utils.c scan_jobs.c target.c scan.c sender.c
 NAME	=	ft_nmap
 CC		=	cc
 CFLAGS	+=	-W -Wall -Wextra -Werror

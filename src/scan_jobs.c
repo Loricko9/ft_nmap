@@ -1,7 +1,5 @@
 #include "ft_nmap.h"
 
-#include "ft_nmap.h"
-
 size_t preview_scan_jobs(const char *target, const t_info *info) {
     static const char *names[SCAN_COUNT] = {
         "SYN", "NULL", "FIN", "XMAS", "ACK", "UDP"

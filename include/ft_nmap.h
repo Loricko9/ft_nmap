@@ -6,7 +6,7 @@
 /*   By: kquetat- <kquetat-@student.42nice.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/21 09:52:13 by lle-saul          #+#    #+#             */
-/*   Updated: 2026/10/13 21:55:51 by kquetat-         ###   ########.fr       */
+/*   Updated: 2026/10/13 22:37:06 by kquetat-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,5 +81,11 @@ size_t preview_scan_jobs(const char *target, const t_info *info);
 /*target.c*/
 bool prepare_ipv4_target(const char *text, struct in_addr *address);
 bool find_source_ipv4(struct in_addr target, struct in_addr *source);
+
+/* sender.c */
+int open_tcp_sender(struct in_addr source);
+
+/* scan.c */
+bool preview_target(const char *target, const t_info *info);
 
 #endif

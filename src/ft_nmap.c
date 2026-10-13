@@ -6,7 +6,7 @@
 /*   By: kquetat- <kquetat-@student.42nice.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/21 09:52:27 by lle-saul          #+#    #+#             */
-/*   Updated: 2026/10/13 22:01:29 by kquetat-         ###   ########.fr       */
+/*   Updated: 2026/10/13 22:38:22 by kquetat-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,59 +39,14 @@ int	main(int ac, char **av)
 			return (printf("ft_nmap: Memory allocation error\n"), 1);
 	}
 
+	int status = EXIT_SUCCESS;
+
 	for (int i = 0; ip_lst[i]; i++) {
 		// printf("Scanning IP: %s\n", ip_lst[i]);
-
-		struct in_addr address;
-
-		if (!prepare_ipv4_target(ip_lst[i], &address)) {
-			fprintf(stderr, "ft_nmap: Cannot prepare IPv4 target: %s\n",
-				ip_lst[i]);
-			free_tab(ip_lst);
-			return EXIT_FAILURE;
+		if (!preview_target(ip_lst[i], &info)) {
+			status = EXIT_FAILURE;
+			break ;
 		}
-
-		printf("Prepared IPv4 target: %s\n", ip_lst[i]);
-		struct sockaddr_in destination = {0};
-
-		destination.sin_family = AF_INET;
-		destination.sin_addr = address;
-
-		char printable[INET_ADDRSTRLEN];
-		if (inet_ntop(AF_INET, &destination.sin_addr, printable, sizeof(printable)) == NULL) {
-			perror("ft_nmap: inet_ntop");
-			free_tab(ip_lst);
-			return EXIT_FAILURE;
-		}
-
-		struct in_addr source;
-
-		if (!find_source_ipv4(address, &source)) {
-			free_tab(ip_lst);
-			return EXIT_FAILURE;
-		}
-
-		char source_printable[INET_ADDRSTRLEN];
-
-		if (inet_ntop(AF_INET, &source, source_printable, sizeof(source_printable)) == NULL) {
-			perror("ft_nmap: source inet_ntop");
-			free_tab(ip_lst);
-			return EXIT_FAILURE;
-		}
-
-		printf("Source IPv4: %s\n", source_printable);
-
-		int send_fd = socket(AF_INET, SOCK_RAW, IPPROTO_TCP);
-		if (send_fd == -1) {
-			perror("ft_nmap: socket");
-			free_tab(ip_lst);
-			return EXIT_FAILURE;
-		}
-		printf("Raw TCP socket ready for %s (fd=%d)\n", printable, send_fd);
-
-		size_t count = preview_scan_jobs(ip_lst[i], &info);
-		printf("Jobs: %zu\n", count);
-		close(send_fd);
 	}
 
 	free_tab(ip_lst);
@@ -117,5 +72,5 @@ int	main(int ac, char **av)
 	// 	if (is_port_set(info.port_bitmap, i))
 	// 		printf("%d port is set\n", i);
 	// }
-	return (0);
+	return (status);
 }

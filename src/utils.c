@@ -17,6 +17,7 @@ void	ft_init_info(t_info *info)
 	info->ip = NULL;
 	info->file = NULL;
 	memset(info->port_bitmap, 0, BITMAP_SIZE);
+	memset(info->port_bitmap, 0xFF, 1024 / 8);
 	info->nb_threads = 0;
 	for (int i = 0; i < 6; i++)
 		info->types[i] = false;

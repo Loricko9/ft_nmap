@@ -54,6 +54,7 @@ static void	port_error(char *str, char **ports_list, char **ports)
 
 static void	parse_ports(char *arg, t_info *info)
 {
+	memset(info->port_bitmap, 0, BITMAP_SIZE);
 	for (int i = 0; arg[i]; i++) {
 		if (!((arg[i] >= '0' && arg[i] <= '9') || arg[i] == ',' || arg[i] == '-')) {
 			printf("ft_nmap: Invalid port format: %s\n", arg);

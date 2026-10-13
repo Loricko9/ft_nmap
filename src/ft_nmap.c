@@ -6,7 +6,7 @@
 /*   By: kquetat- <kquetat-@student.42nice.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/21 09:52:27 by lle-saul          #+#    #+#             */
-/*   Updated: 2026/10/13 19:19:52 by kquetat-         ###   ########.fr       */
+/*   Updated: 2026/10/13 22:01:29 by kquetat-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,6 +63,23 @@ int	main(int ac, char **av)
 			free_tab(ip_lst);
 			return EXIT_FAILURE;
 		}
+
+		struct in_addr source;
+
+		if (!find_source_ipv4(address, &source)) {
+			free_tab(ip_lst);
+			return EXIT_FAILURE;
+		}
+
+		char source_printable[INET_ADDRSTRLEN];
+
+		if (inet_ntop(AF_INET, &source, source_printable, sizeof(source_printable)) == NULL) {
+			perror("ft_nmap: source inet_ntop");
+			free_tab(ip_lst);
+			return EXIT_FAILURE;
+		}
+
+		printf("Source IPv4: %s\n", source_printable);
 
 		int send_fd = socket(AF_INET, SOCK_RAW, IPPROTO_TCP);
 		if (send_fd == -1) {

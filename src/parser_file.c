@@ -28,6 +28,7 @@ char	**read_host_file(char *filename)
 	size_t ip_count = 0;
 
 	while ((read = getline(&line, &len, file)) != -1) {
+		line[strcspn(line, "\r\n")] = 0;
 		char **split_line = ft_split(line, " ");
 		if (!split_line)
 			return (NULL);
@@ -43,7 +44,6 @@ char	**read_host_file(char *filename)
 				free_tab(ip_list);
 				exit(1);
 			}
-			ip_list[ip_count][strcspn(ip_list[ip_count], "\n")] = 0;
 			ip_count++;
 		}
 		ip_list[ip_count] = NULL;

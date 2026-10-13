@@ -20,6 +20,9 @@
 # include <stdbool.h>
 # include <stdint.h>
 # include <ctype.h>
+# include <pthread.h>
+# include <time.h>
+# include <stdatomic.h>
 
 #define MAX_PORTS 65536
 #define BITMAP_SIZE (MAX_PORTS / 8)

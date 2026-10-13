@@ -1,4 +1,4 @@
-FILES 	=	ft_nmap.c parser.c parser_file.c ft_split.c utils.c
+FILES 	=	ft_nmap.c parser.c parser_file.c ft_split.c utils.c scan_jobs.c target.c
 NAME	=	ft_nmap
 CC		=	cc
 CFLAGS	+=	-W -Wall -Wextra -Werror
@@ -29,7 +29,7 @@ fclean	:	header message_fclean
 	@$(RM) $(OBJ_DIR) $(NAME)
 
 fclean_re	: header message_re
-	@$(RM) $(OBJ_DIR) 
+	@$(RM) $(OBJ_DIR)
 	@$(RM) $(NAME)
 
 re		:	fclean_re $(NAME)

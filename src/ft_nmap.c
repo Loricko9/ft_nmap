@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_nmap.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lle-saul <lle-saul@student.42perpignan.    +#+  +:+       +#+        */
+/*   By: kquetat- <kquetat-@student.42nice.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/21 09:52:27 by lle-saul          #+#    #+#             */
-/*   Updated: 2026/09/21 09:52:27 by lle-saul         ###   ########.fr       */
+/*   Updated: 2026/10/13 19:19:52 by kquetat-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ int	main(int ac, char **av)
 		return (printf("ft_nmap: No IP address or file specified\n"), 1);
 	if (info.ip && info.file)
 		return (printf("ft_nmap: Cannot specify both IP address and file\n"), 1);
-	
+
 	char	**ip_lst = NULL;
 	if (info.ip) {
 		ip_lst = malloc(sizeof(char *) * 2);
@@ -38,9 +38,43 @@ int	main(int ac, char **av)
 		if (!ip_lst)
 			return (printf("ft_nmap: Memory allocation error\n"), 1);
 	}
-	
+
 	for (int i = 0; ip_lst[i]; i++) {
-		printf("Scanning IP: %s\n", ip_lst[i]);
+		// printf("Scanning IP: %s\n", ip_lst[i]);
+
+		struct in_addr address;
+
+		if (!prepare_ipv4_target(ip_lst[i], &address)) {
+			fprintf(stderr, "ft_nmap: Cannot prepare IPv4 target: %s\n",
+				ip_lst[i]);
+			free_tab(ip_lst);
+			return EXIT_FAILURE;
+		}
+
+		printf("Prepared IPv4 target: %s\n", ip_lst[i]);
+		struct sockaddr_in destination = {0};
+
+		destination.sin_family = AF_INET;
+		destination.sin_addr = address;
+
+		char printable[INET_ADDRSTRLEN];
+		if (inet_ntop(AF_INET, &destination.sin_addr, printable, sizeof(printable)) == NULL) {
+			perror("ft_nmap: inet_ntop");
+			free_tab(ip_lst);
+			return EXIT_FAILURE;
+		}
+
+		int send_fd = socket(AF_INET, SOCK_RAW, IPPROTO_TCP);
+		if (send_fd == -1) {
+			perror("ft_nmap: socket");
+			free_tab(ip_lst);
+			return EXIT_FAILURE;
+		}
+		printf("Raw TCP socket ready for %s (fd=%d)\n", printable, send_fd);
+
+		size_t count = preview_scan_jobs(ip_lst[i], &info);
+		printf("Jobs: %zu\n", count);
+		close(send_fd);
 	}
 
 	free_tab(ip_lst);

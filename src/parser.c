@@ -144,14 +144,18 @@ void	check_flags(int ac, char **av, t_info *info)
 	{
 		found_flag = false;
 		for (int j = 0; j < 6; j++) {
-			if (strcmp(av[i], flag[j]) == 0) {
+			if (strcmp(av[i], flag[j]) == 0 && (av[i + 1] || j == 0)) {
 				parser[j](av[i + 1], info);
 				found_flag = true;
 				i++;
 				break;
 			}
 		}
-		if (av[i][0] == '-' && !found_flag) {
+		if (!av[i + 1] && !found_flag) {
+			printf("ft_nmap: Missing argument for flag: %s\n", av[i]);
+			exit(1);
+		}
+		else if (av[i][0] == '-' && !found_flag) {
 			printf("ft_nmap: Unknown flag: %s\n", av[i]);
 			exit(1);
 		}

@@ -6,7 +6,7 @@
 /*   By: lle-saul <lle-saul@student.42perpignan.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/21 09:52:27 by lle-saul          #+#    #+#             */
-/*   Updated: 2026/09/21 09:52:27 by lle-saul         ###   ########.fr       */
+/*   Updated: 2026/10/15 10:13:06 by lle-saul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@ int	main(int ac, char **av)
 	else {
 		ip_lst = read_host_file(info.file);
 		if (!ip_lst)
-			return (printf("ft_nmap: Memory allocation error\n"), 1);
+			return (printf("ft_nmap: Cannot specified empty file\n"), 1);
 	}
 
 	// Main loop analyze each IP address & create threads

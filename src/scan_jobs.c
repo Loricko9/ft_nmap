@@ -1,31 +1,28 @@
 #include "ft_nmap.h"
 
-size_t preview_scan_jobs(const char *target, const t_info *info) {
-    static const char *names[SCAN_COUNT] = {
-        "SYN", "NULL", "FIN", "XMAS", "ACK", "UDP"
-    };
-    size_t count = 0;
+void *preview_scan_jobs(void *arg) {
+    t_thread_data *data = (t_thread_data *)arg;
 
-    for (int port = 1; port < MAX_PORTS; port++) {
-        if (!is_port_set(info->port_bitmap, port))
+    int fd = open_tcp_sender(data->source);
+    if (fd == -1)
+        return false;
+
+    while (1) {
+        int port = atomic_fetch_add(&current_port, 1);
+        if (port >= MAX_PORTS)
+            break;
+
+        if (!is_port_set(data->port_bitmap, port))
             continue;
-
         for (int scan = 0; scan < SCAN_COUNT; scan++) {
-            if (!info->types[scan])
+            if (!data->types[scan])
                 continue;
-
-            t_scan_job job = {
-                .target = target,
-                .port = (uint16_t)port,
-                .type = (t_scan_type)scan
-            };
-
             printf("%s:%u %s\n",
-                job.target,
-                (unsigned int)job.port,
-                names[job.type]);
+                data->target,
+                (unsigned int)port,
+                scan_types[scan]);
 
-                if (job.type == SCAN_SYN) {
+                if (scan == 0) {
 
                 const uint8_t sample[] = {0x07, 0x08, 0xA, 0x01};
 
@@ -34,14 +31,14 @@ size_t preview_scan_jobs(const char *target, const t_info *info) {
 
                 uint8_t tcp[TCP_HEADER_SIZE];
 
-                build_syn_header(tcp, 40000, job.port, 1);
+                build_syn_header(tcp, 40000, port, 1);
                 for (size_t k = 0; k < sizeof(tcp); k++) {
                     printf(" %02x", (unsigned int)tcp[k]);
                 }
                 printf("\n");
             }
-            count++;
         }
     }
-    return count;
+    close(fd);
+    return NULL;
 }

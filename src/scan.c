@@ -1,5 +1,21 @@
 #include "ft_nmap.h"
 
+void	create_threads(const t_thread_data *data, const t_info *info)
+{
+	pthread_t	*threads = malloc(sizeof(pthread_t) * info->nb_threads);
+	if (!threads) {
+		printf("ft_nmap: Memory allocation error\n");
+		exit(1);
+	}
+	for (size_t i = 0; i < info->nb_threads; i++) {
+		pthread_create(&threads[i], NULL, preview_scan_jobs, (void *)data);
+	}
+	for (size_t i = 0; i < info->nb_threads; i++) {
+		pthread_join(threads[i], NULL);
+	}
+	free(threads);
+}
+
 bool preview_target(const char *target, const t_info *info)
 {
     struct in_addr source;
@@ -35,17 +51,17 @@ bool preview_target(const char *target, const t_info *info)
     }
 
     printf("Source IPv4: %s\n", src_text);
+    t_thread_data data = {
+        .target = target,
+        .source = source,
+        .port_bitmap = info->port_bitmap,
+        .types = info->types
+    };
 
-    int fd = open_tcp_sender(source);
-    if (fd == -1)
-        return false;
+    if (info->nb_threads == 0)
+        preview_scan_jobs(&data);
+    else
+        create_threads(&data, info);
 
-    printf("Raw TCP socket bound to %s\n", src_text);
-    printf("Raw TCP socket ready for %s (fd=%d)\n", target_text, fd);
-
-    size_t count = preview_scan_jobs(target, info);
-    printf("Jobs: %zu\n", count);
-
-    close(fd);
     return true;
 }

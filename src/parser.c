@@ -6,7 +6,7 @@
 /*   By: lle-saul <lle-saul@student.42perpignan.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/21 10:24:56 by lle-saul          #+#    #+#             */
-/*   Updated: 2026/09/21 10:24:56 by lle-saul         ###   ########.fr       */
+/*   Updated: 2026/10/16 14:09:29 by lle-saul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,13 +112,12 @@ static void	parse_speedup(char *arg, t_info *info)
 
 static void	parse_scan(char *arg, t_info *info)
 {
-	char *scan_types[] = {"SYN", "NULL", "FIN", "XMAS", "ACK", "UDP", NULL};
 	char **types = ft_split(arg, "/, ");
 
 	bool found;
 	for (int i = 0; types[i]; i++) {
 		found = false;
-		for (int j = 0; scan_types[j]; j++) {
+		for (int j = 0; j < SCAN_COUNT; j++) {
 			if (strcmp(types[i], scan_types[j]) == 0) {
 				info->types[j] = true;
 				found = true;
@@ -132,6 +131,21 @@ static void	parse_scan(char *arg, t_info *info)
 		}
 	}
 	free_tab(types);
+}
+
+static void check_type_end(t_info *info)
+{
+	bool found = false;
+	for (int i = 0; i < SCAN_COUNT; i++) {
+		if (info->types[i]) {
+			found = true;
+			break ;
+		}
+	}
+	if (!found) {
+		for (int i = 0; i < SCAN_COUNT; i++)
+			info->types[i] = true;
+	}
 }
 
 void	check_flags(int ac, char **av, t_info *info)
@@ -164,4 +178,5 @@ void	check_flags(int ac, char **av, t_info *info)
 			exit(1);
 		}
 	}
+	check_type_end(info);
 }

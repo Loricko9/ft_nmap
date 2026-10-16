@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_nmap.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lle-saul <lle-saul@student.42perpignan.    +#+  +:+       +#+        */
+/*   By: kquetat- <kquetat-@student.42nice.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/21 09:52:27 by lle-saul          #+#    #+#             */
-/*   Updated: 2026/10/15 10:13:06 by lle-saul         ###   ########.fr       */
+/*   Updated: 2026/10/13 22:38:22 by kquetat-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ int	main(int ac, char **av)
 		return (printf("ft_nmap: No IP address or file specified\n"), 1);
 	if (info.ip && info.file)
 		return (printf("ft_nmap: Cannot specify both IP address and file\n"), 1);
-	
+
 	char	**ip_lst = NULL;
 	if (info.ip) {
 		ip_lst = malloc(sizeof(char *) * 2);
@@ -71,17 +71,14 @@ int	main(int ac, char **av)
 			return (printf("ft_nmap: Cannot specified empty file\n"), 1);
 	}
 
-	// Main loop analyze each IP address & create threads
+	int status = EXIT_SUCCESS;
+
 	for (int i = 0; ip_lst[i]; i++) {
-		clock_t start = clock();
-		current_port = 1;
-		if (info.nb_threads != 0)
-			create_threads(&info, ip_lst[i]);
-		else
-			work_thread((void *)&info);
-		clock_t end = clock();
-		double temps_s = ((double)(end - start) / CLOCKS_PER_SEC);
-		printf("Time for IP %s: %.2f ms\n", ip_lst[i], temps_s);
+		// printf("Scanning IP: %s\n", ip_lst[i]);
+		if (!preview_target(ip_lst[i], &info)) {
+			status = EXIT_FAILURE;
+			break ;
+		}
 	}
 
 	free_tab(ip_lst);
@@ -107,5 +104,5 @@ int	main(int ac, char **av)
 	// 	if (is_port_set(info.port_bitmap, i))
 	// 		printf("%d port is set\n", i);
 	// }
-	return (0);
+	return (status);
 }

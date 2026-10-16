@@ -33,8 +33,7 @@ bool preview_target(const char *target, const t_info *info)
     printf("Prepared IPv4 target: %s\n", target);
     destination.sin_family = AF_INET;
 
-    if (inet_ntop(AF_INET, &destination.sin_addr,
-            target_text, sizeof(target_text)) == NULL)
+    if (inet_ntop(AF_INET, &destination.sin_addr, target_text, sizeof(target_text)) == NULL)
     {
         perror("ft_nmap: inet_ntop");
         return false;
@@ -43,8 +42,7 @@ bool preview_target(const char *target, const t_info *info)
     if (!find_source_ipv4(destination.sin_addr, &source))
         return false;
 
-    if (inet_ntop(AF_INET, &source,
-            src_text, sizeof(src_text)) == NULL)
+    if (inet_ntop(AF_INET, &source, src_text, sizeof(src_text)) == NULL)
     {
         perror("ft_nmap: source inet_ntop");
         return false;

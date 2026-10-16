@@ -6,7 +6,7 @@
 /*   By: lle-saul <lle-saul@student.42perpignan.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/21 09:52:13 by lle-saul          #+#    #+#             */
-/*   Updated: 2026/10/16 13:48:31 by lle-saul         ###   ########.fr       */
+/*   Updated: 2026/10/16 14:40:14 by lle-saul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@
 # include <ctype.h>
 # include <pthread.h>
 # include <time.h>
+# include <netdb.h>
 # include <stdatomic.h>
 
 #define MAX_PORTS 65536

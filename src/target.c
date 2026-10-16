@@ -2,6 +2,18 @@
 
 bool prepare_ipv4_target(const char *text, struct in_addr *address)
 {
+    struct addrinfo hints;
+    struct addrinfo *res = NULL;
+
+    memset(&hints, 0, sizeof(hints));
+    hints.ai_family = AF_INET;
+    int status = getaddrinfo(text, NULL, &hints, &res);
+    if (status == 0 && res) {
+        struct sockaddr_in *ipv4 = (struct sockaddr_in *)res->ai_addr;
+        *address = ipv4->sin_addr;
+        freeaddrinfo(res);
+        return true;
+    }
     return (inet_pton(AF_INET, text, address) == 1);
 }
 

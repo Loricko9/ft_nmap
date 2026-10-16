@@ -6,11 +6,43 @@
 /*   By: lle-saul <lle-saul@student.42perpignan.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/21 09:52:27 by lle-saul          #+#    #+#             */
-/*   Updated: 2026/09/21 09:52:27 by lle-saul         ###   ########.fr       */
+/*   Updated: 2026/10/15 10:13:06 by lle-saul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_nmap.h"
+
+atomic_int current_port = 1;
+
+void	*work_thread(void *arg)
+{
+	t_info	*info = (t_info *)arg;
+	while (1) {
+		int port = atomic_fetch_add(&current_port, 1);
+		if (port >= MAX_PORTS)
+			break ;
+		if (is_port_set(info->port_bitmap, port))
+			printf("Port %d Analysé\n", port);
+	}
+	return NULL;
+}
+
+void	create_threads(t_info *info, char *ip_lst)
+{
+	pthread_t	*threads = malloc(sizeof(pthread_t) * info->nb_threads);
+	if (!threads) {
+		printf("ft_nmap: Memory allocation error\n");
+		exit(1);
+	}
+	for (size_t i = 0; i < info->nb_threads; i++) {
+		pthread_create(&threads[i], NULL, work_thread, (void *)info);
+	}
+	for (size_t i = 0; i < info->nb_threads; i++) {
+		pthread_join(threads[i], NULL);
+	}
+	(void)ip_lst;
+	free(threads);
+}
 
 int	main(int ac, char **av)
 {
@@ -36,11 +68,20 @@ int	main(int ac, char **av)
 	else {
 		ip_lst = read_host_file(info.file);
 		if (!ip_lst)
-			return (printf("ft_nmap: Memory allocation error\n"), 1);
+			return (printf("ft_nmap: Cannot specified empty file\n"), 1);
 	}
-	
+
+	// Main loop analyze each IP address & create threads
 	for (int i = 0; ip_lst[i]; i++) {
-		printf("Scanning IP: %s\n", ip_lst[i]);
+		clock_t start = clock();
+		current_port = 1;
+		if (info.nb_threads != 0)
+			create_threads(&info, ip_lst[i]);
+		else
+			work_thread((void *)&info);
+		clock_t end = clock();
+		double temps_s = ((double)(end - start) / CLOCKS_PER_SEC);
+		printf("Time for IP %s: %.2f ms\n", ip_lst[i], temps_s);
 	}
 
 	free_tab(ip_lst);

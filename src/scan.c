@@ -52,6 +52,7 @@ bool preview_target(const char *target, const t_info *info)
     t_thread_data data = {
         .target = target,
         .source = source,
+        .destination = destination.sin_addr,
         .port_bitmap = info->port_bitmap,
         .types = info->types
     };

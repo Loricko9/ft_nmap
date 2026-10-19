@@ -22,16 +22,11 @@ void *preview_scan_jobs(void *arg) {
                 (unsigned int)port,
                 scan_types[scan]);
 
-                if (scan == 0) {
-
-                const uint8_t sample[] = {0x07, 0x08, 0xA, 0x01};
-
-                printf("Checksum sample: %04x\n",
-                    (unsigned int)internet_checksum(sample, sizeof(sample)));
-
+            if (scan == SCAN_SYN) {
                 uint8_t tcp[TCP_HEADER_SIZE];
 
                 build_syn_header(tcp, 40000, port, 1);
+                finalize_tcp_checksum(tcp, data->source, data->destination);
                 for (size_t k = 0; k < sizeof(tcp); k++) {
                     printf(" %02x", (unsigned int)tcp[k]);
                 }

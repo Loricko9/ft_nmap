@@ -25,3 +25,18 @@ void build_syn_header(uint8_t header[TCP_HEADER_SIZE], uint16_t source_port, uin
 
     write_u16(header + 14, 1024);
 }
+
+void finalize_tcp_checksum(uint8_t header[TCP_HEADER_SIZE],
+                          struct in_addr source, struct in_addr destination)
+{
+    uint8_t input[12 + TCP_HEADER_SIZE] = {0};
+
+    memcpy(input, &source.s_addr, 4);
+    memcpy(input + 4, &destination.s_addr, 4);
+    input[9] = IPPROTO_TCP;
+    write_u16(input + 10, TCP_HEADER_SIZE);
+
+    write_u16(header + 16, 0);
+    memcpy(input + 12, header, TCP_HEADER_SIZE);
+    write_u16(header + 16, internet_checksum(input, sizeof(input)));
+}

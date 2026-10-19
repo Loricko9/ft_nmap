@@ -36,6 +36,8 @@
 
 void build_syn_header(uint8_t header[TCP_HEADER_SIZE], uint16_t source_port,
 					  uint16_t destination_port, uint32_t sequence);
+void finalize_tcp_checksum(uint8_t header[TCP_HEADER_SIZE],
+                          struct in_addr source, struct in_addr destination);
 
 extern atomic_int current_port;
 					  
@@ -52,6 +54,7 @@ typedef struct s_thread_data
 {
 	const char		*target;
 	struct in_addr	source;
+	struct in_addr	destination;
 	const uint8_t	*port_bitmap;
 	const bool		*types;
 } t_thread_data;

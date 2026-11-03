@@ -1,5 +1,7 @@
 #include "ft_nmap.h"
 
+atomic_int current_port = 1;
+
 void *preview_scan_jobs(void *arg) {
     t_thread_data *data = (t_thread_data *)arg;
 

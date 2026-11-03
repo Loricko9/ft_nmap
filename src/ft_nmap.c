@@ -12,12 +12,6 @@
 
 #include "ft_nmap.h"
 
-atomic_int current_port = 1;
-
-const char * const scan_types[SCAN_COUNT] = {
-    "SYN", "NULL", "FIN", "XMAS", "ACK", "UDP"
-};
-
 int	main(int ac, char **av)
 {
 	t_info	info;

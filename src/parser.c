@@ -12,6 +12,10 @@
 
 #include "ft_nmap.h"
 
+const char * const scan_types[SCAN_COUNT] = {
+    "SYN", "NULL", "FIN", "XMAS", "ACK", "UDP"
+};
+
 static void	parse_help(char *arg, t_info *info)
 {
 	(void)info;
